@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Christmas Wishes</title>
+    <!-- 微信分享配置 -->
+    <meta name="description" content="圣诞祝福贺卡 - 愿这个圣诞的温暖与星光，照亮你新一年的每一次出发。">
+    <meta name="keywords" content="圣诞祝福,圣诞节,新年快乐,贺卡">
+    <meta property="og:title" content="Christmas Wishes">
+    <meta property="og:description" content="愿这个圣诞的温暖与星光，照亮你新一年的每一次出发。愿你保持热爱，奔赴山海。">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://via.placeholder.com/300x300/2e1065/ffffff?text=Christmas+Wishes">
+    <meta property="og:url" content="">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Christmas Wishes">
+    <meta name="twitter:description" content="愿这个圣诞的温暖与星光，照亮你新一年的每一次出发。愿你保持热爱，奔赴山海。">
+    <meta name="twitter:image" content="https://via.placeholder.com/300x300/2e1065/ffffff?text=Christmas+Wishes">
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-accent: #1e1b4b;
+            --gold: #fcd34d;
+            --gold-glow: rgba(252, 211, 77, 0.5);
+            --tree-green: #0f392b;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-main: #ffffff;
+            --text-sub: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            /* Deep, dreamy night sky gradient */
+            background: radial-gradient(circle at 50% 120%, #2e1065 0%, #172554 40%, #020617 100%);
+            font-family: 'Playfair Display', serif;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        /* --- Background Layers --- */
+        #snow-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.6) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* --- Main Content Wrapper --- */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            opacity: 0; /* Initial state for animation */
+            animation: fadeInPage 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* --- Christmas Tree (SVG) --- */
+        .tree-container {
+            width: 300px;
+            height: 380px;
+            position: relative;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+            transform-origin: bottom center;
+            animation: treeRise 2s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+        }
+
+        .star {
+            transform-origin: center;
+            animation: starBreath 4s ease-in-out infinite alternate, starSpin 12s linear infinite;
+        }
+
+        .light-bulb {
+            animation: blink 2s infinite ease-in-out alternate;
+        }
+
+        /* Randomizing blink delays via nth-child happens in JS or CSS repetition */
+        .light-bulb:nth-child(2n) { animation-duration: 3s; animation-delay: 0.5s; }
+        .light-bulb:nth-child(3n) { animation-duration: 2.5s; animation-delay: 1s; }
+        .light-bulb:nth-child(5n) { animation-duration: 4s; animation-delay: 0.2s; }
+
+        /* --- Typography --- */
+        .text-group {
+            margin-top: -20px;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 1.5s cubic-bezier(0.22, 1, 0.36, 1) 1.5s forwards;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #fef3c7, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+            margin-bottom: 15px;
+            line-height: 1.1;
+            letter-spacing: 1px;
+        }
+
+        .message {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 1.1rem;
+            color: var(--text-sub);
+            line-height: 1.8;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- CTA Button --- */
+        .cta-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeUp 1.5s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards;
+            /* Mobile touch support */
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
+            /* Ensure button is large enough for mobile touch */
+            min-width: 200px;
+            min-height: 50px;
+            display: inline-block;
+            text-align: center;
+            z-index: 100;
+            /* Increase touch target area */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .cta-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .cta-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        .cta-btn:hover::after {
+            left: 100%;
+            opacity: 1;
+            transition: 0.7s;
+        }
+
+        /* --- Footer Info --- */
+        .countdown-container {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeIn 2s ease 2.5s forwards;
+        }
+
+        /* Ensure button is not blocked */
+        .text-group {
+            margin-bottom: 120px; /* Add space below text group */
+        }
+
+        .time-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-val {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        .signature {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            z-index: 10;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            width: 90%;
+            max-width: 450px;
+            background: rgba(30, 27, 75, 0.7);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        /* Decorative shine in modal */
+        .modal-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+            opacity: 0.2;
+            filter: blur(20px);
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .modal-text {
+            font-family: -apple-system, sans-serif;
+            line-height: 1.8;
+            color: #e2e8f0;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 8px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            transition: 0.3s;
+            /* Mobile touch support */
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #fff;
+        }
+
+        /* --- Animations Keyframes --- */
+        @keyframes fadeInPage {
+            to { opacity: 1; }
+        }
+
+        @keyframes treeRise {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; filter: brightness(1); }
+            50% { opacity: 1; filter: brightness(1.5) drop-shadow(0 0 5px currentColor); }
+        }
+
+        @keyframes starBreath {
+            0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px var(--gold)); }
+            100% { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 15px var(--gold)); }
+        }
+
+        @keyframes starSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .tree-container { width: 220px; height: 280px; }
+            .message { font-size: 0.95rem; padding: 0 10px; }
+            .countdown-container { bottom: 60px; gap: 15px; }
+            .time-val { font-size: 1.2rem; }
+            .signature { width: 100%; text-align: center; right: 0; bottom: 10px; }
+        }
+    </style>
+
+</head>
+<body>
+
+    <!-- Snow Canvas Layer -->
+    <canvas id="snow-canvas"></canvas>
+    
+    <!-- Vignette for cinematic feel -->
+    <div class="vignette"></div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper" id="scene">
+        
+        <!-- SVG Tree -->
+        <div class="tree-container" data-depth="0.05">
+            <svg viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                <!-- Tree Body (Abstract/Geometric) -->
+                <defs>
+                    <linearGradient id="treeGrad" x1="50" y1="0" x2="50" y2="130" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stop-color="#0f392b"/>
+                        <stop offset="1" stop-color="#022c22"/>
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Layers of the tree -->
+                <path d="M50 15 L15 110 H85 L50 15Z" fill="url(#treeGrad)" opacity="0.9"/>
+                <path d="M50 35 L20 110 H80 L50 35Z" fill="url(#treeGrad)" opacity="0.8"/>
+                <path d="M50 55 L25 110 H75 L50 55Z" fill="url(#treeGrad)" opacity="0.7"/>
+                
+                <!-- Tree Trunk -->
+                <rect x="46" y="110" width="8" height="15" fill="#3f2e18" />
+
+                <!-- Lights (Decoration) -->
+                <circle cx="35" cy="90" r="1.5" fill="#ef4444" class="light-bulb"/>
+                <circle cx="65" cy="90" r="1.5" fill="#3b82f6" class="light-bulb"/>
+                <circle cx="50" cy="70" r="1.5" fill="#fcd34d" class="light-bulb"/>
+                <circle cx="40" cy="55" r="1.5" fill="#ef4444" class="light-bulb"/>
+                <circle cx="60" cy="55" r="1.5" fill="#a855f7" class="light-bulb"/>
+                <circle cx="45" cy="100" r="1.5" fill="#fcd34d" class="light-bulb"/>
+                <circle cx="55" cy="100" r="1.5" fill="#ef4444" class="light-bulb"/>
+                <circle cx="30" cy="105" r="1.5" fill="#3b82f6" class="light-bulb"/>
+                <circle cx="70" cy="105" r="1.5" fill="#a855f7" class="light-bulb"/>
+                <circle cx="50" cy="40" r="1.5" fill="#fcd34d" class="light-bulb"/>
+
+                <!-- Top Star -->
+                <g class="star">
+                    <path d="M50 5 L53 14 L62 14 L55 20 L58 29 L50 24 L42 29 L45 20 L38 14 L47 14 Z" fill="#fcd34d" filter="url(#glow)"/>
+                </g>
+            </svg>
+        </div>
+
+        <!-- Text Content -->
+        <div class="text-group" data-depth="0.1">
+            <h1>Merry Christmas<br>& Happy New Year</h1>
+            <p class="message">
+                愿这个圣诞的温暖与星光，照亮你新一年的每一次出发。<br>
+                愿你保持热爱，奔赴山海。
+            </p>
+            <button id="christmas-btn" class="cta-btn" onclick="openModal()">点击收下祝福</button>
+        </div>
+    </div>
+
+    <!-- Countdown Footer -->
+    <div class="countdown-container">
+        <div class="time-box">
+            <span class="time-val" id="days">00</span>
+            <span class="time-label">Days</span>
+        </div>
+        <div class="time-box">
+            <span class="time-val" id="hours">00</span>
+            <span class="time-label">Hrs</span>
+        </div>
+        <div class="time-box">
+            <span class="time-val" id="minutes">00</span>
+            <span class="time-label">Mins</span>
+        </div>
+        <div class="time-box">
+            <span class="time-val" id="seconds">00</span>
+            <span class="time-label">Secs</span>
+        </div>
+    </div>
+
+    <!-- Signature -->
+    <div class="signature">
+        With love, 来自高源的圣诞祝福
+    </div>
+
+    <!-- Modal Popup -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-card">
+            <h2 class="modal-title">✨ Best Wishes ✨</h2>
+            <div class="modal-text">
+                <p>在这个充满奇迹的时刻，<br>想对你说声：圣诞快乐！</p>
+                <br>
+                <p>愿新的一年里，你的世界里永远有雪花的纯洁，<br>有炉火的温暖，还有星光的指引。</p>
+                <br>
+                <p>平安喜乐，万事胜意。</p>
+            </div>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Snow Effect (Canvas) ---
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        // Parallax variables
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        // Resize handling
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            initParticles();
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+                // Randomize starting Y to fill screen initially
+                this.y = Math.random() * height;
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = -10;
+                this.size = Math.random() * 2 + 0.5; // size 0.5 - 2.5
+                this.speedY = Math.random() * 1 + 0.5; // speed 0.5 - 1.5
+                this.speedX = Math.random() * 0.5 - 0.25; // drift
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + (mouseX - width/2) * 0.0001 * this.size; // Parallax influence
+
+                if (this.y > height) {
+                    this.reset();
+                }
+                if (this.x > width) this.x = 0;
+                if (this.x < 0) this.x = width;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            // Responsive particle count
+            const count = width < 768 ? 80 : 150; 
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw faint glowing stars occasionally
+            // (Optional subtle texture could go here)
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animate();
+
+        // --- Mouse Parallax for Background & Text ---
+        const scene = document.getElementById('scene');
+        
+        // Check if device is mobile
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (!isMobile) {
+            // Only enable parallax on desktop devices
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+
+                // Subtle parallax for the main content
+                const x = (window.innerWidth - e.pageX * 2) / 100;
+                const y = (window.innerHeight - e.pageY * 2) / 100;
+                
+                // Apply slight transform to tree container only for 3D feel
+                const tree = document.querySelector('.tree-container');
+                if(tree) {
+                    tree.style.transform = `translateX(${x}px) translateY(${y}px)`;
+                }
+            });
+        } else {
+            // Disable parallax on mobile for better performance and touch experience
+            document.addEventListener('touchstart', (e) => {
+                // Only update mouseX/mouseY for snow effect on mobile
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                // Only update mouseX/mouseY for snow effect on mobile
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+            });
+        }
+
+        // 微信浏览器兼容性修复
+        (function() {
+            // 检测是否为微信浏览器
+            var isWechat = /MicroMessenger/i.test(navigator.userAgent);
+            
+            // 确保DOM加载完成后执行
+            function ready(fn) {
+                if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                    fn();
+                } else {
+                    document.addEventListener('DOMContentLoaded', fn);
+                }
+            }
+            
+            ready(function() {
+                var modal = document.getElementById('modal');
+                var openModalBtn = document.getElementById('christmas-btn');
+                var closeModalBtn = document.querySelector('.close-btn');
+                var textGroup = document.querySelector('.text-group');
+                
+                // 简单的函数定义，避免复杂的箭头函数
+                function openModal() {
+                    if (modal) {
+                        modal.classList.add('active');
+                    }
+                }
+                
+                function closeModal() {
+                    if (modal) {
+                        modal.classList.remove('active');
+                    }
+                }
+                
+                // 确保按钮和容器是可点击的
+                if (textGroup) {
+                    textGroup.style.pointerEvents = 'auto';
+                    textGroup.style.zIndex = '100';
+                }
+                
+                // 为打开按钮添加事件监听
+                if (openModalBtn) {
+                    // 重置所有事件
+                    openModalBtn.onclick = null;
+                    openModalBtn.ontouchstart = null;
+                    
+                    // 确保按钮是可点击的
+                    openModalBtn.style.pointerEvents = 'auto';
+                    openModalBtn.style.cursor = 'pointer';
+                    openModalBtn.style.zIndex = '1000';
+                    openModalBtn.style.position = 'relative';
+                    
+                    // 微信浏览器优先使用触摸事件
+                    if (isWechat) {
+                        openModalBtn.ontouchstart = function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openModal();
+                        };
+                    } else {
+                        // 其他浏览器使用点击事件
+                        openModalBtn.onclick = openModal;
+                    }
+                    
+                    // 强制渲染
+                    openModalBtn.style.opacity = '0.99';
+                    setTimeout(function() {
+                        openModalBtn.style.opacity = '1';
+                    }, 0);
+                }
+                
+                // 为关闭按钮添加事件监听
+                if (closeModalBtn) {
+                    closeModalBtn.style.pointerEvents = 'auto';
+                    closeModalBtn.style.cursor = 'pointer';
+                    closeModalBtn.style.zIndex = '1001';
+                    closeModalBtn.style.position = 'relative';
+                    
+                    if (isWechat) {
+                        closeModalBtn.ontouchstart = function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            closeModal();
+                        };
+                    } else {
+                        closeModalBtn.onclick = closeModal;
+                    }
+                }
+                
+                // 模态框外部点击关闭
+                if (modal) {
+                    modal.onclick = function(e) {
+                        if (e.target === modal) {
+                            closeModal();
+                        }
+                    };
+                }
+            });
+        })();
+
+        // --- Countdown Timer ---
+        function updateCountdown() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            let christmasDate = new Date(currentYear, 11, 25); // Month is 0-indexed (11 = Dec)
+
+            // If passed, aim for next year
+            if (now.getMonth() === 11 && now.getDate() > 25) {
+                christmasDate.setFullYear(currentYear + 1);
+            }
+
+            const diff = christmasDate - now;
+
+            if (diff <= 0) {
+                // It is Christmas!
+                document.getElementById('days').innerText = "00";
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+            document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+            document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+    </script>
+</body>
+</html>
